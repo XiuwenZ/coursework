@@ -65,6 +65,12 @@ trips %>%
   arrange(desc(count)) %>%
   head(3)
 
+# 
+# 
+# The "find the top 3 end stations for trips starting from each start station" solution isn't quite right though. You keep a (start, end) group throughout your solution. That correctly give you the number of trips from the start to the end, but when you later try to extract the top three you'll still be using that group! That means you're extracting the top three from each (start, end) group when there will only ever be one entry in each of these groups. You need to re-group on just the start station before extracting the top three to avoid this.
+
+
+
 # find the top 3 most common station-to-station trips by gender
 trips %>%
   group_by(gender, start_station_name, end_station_name) %>%
