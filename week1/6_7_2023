@@ -1,0 +1,182 @@
+Read Chapter 7 of IST on sampling distributions and do exercise 7.1
+
+1. Compute the population average of the variable “bmi”.
+mean(bmi)
+2. Compute the population standard deviation of the variable “bmi”.
+sd(bmi)
+3. Compute the expectation of the sampling distribution for the sample average of the variable.
+X.bar <- rep(0,10^5)
+for(i in 1:10^5){
+  X.samp <- sample(pop.2$bmi, 150)
+  X.bar[i] <- mean(X.samp)
+}
+mean(X.bar)   
+4. Compute the standard deviation of the sampling distribution for the sample average of the variable.
+for(i in 1:10^5){
+  X.samp <- sample(pop.2$bmi, 150)
+  X.bar[i] <- mean(X.samp)
+}
+sd(X.bar)
+5. Identify, using simulations, the central region that contains 80% of the
+sampling distribution of the sample average.
+quantile(X.bar, c(0.1, 0.9))
+6. Identify, using the Central Limit Theorem, an approximation of the central region that contains 80% of the sampling distribution of the sample
+average
+qnorm(c(0.1,0.9), mean(x.bar), sd(x.bar))
+
+
+
+Read Chapter 9 of IST and do exercise 9.1
+1. What is the sample average of the change in score between the patient’s
+rating before the application of the device and the rating after the application?
+summary(magnets) 
+
+
+2. Is the variable “active” a factor or a numeric variable?
+  factor because there are two levels in the list summary
+
+3. Compute the average value of the variable “change” for the patients that
+received and active magnet and average value for those that received an
+inactive placebo. (Hint: Notice that the first 29 patients received an active
+magnet and the last 21 patients received an inactive placebo. The subsequence of the first 29 values of the given variables can be obtained via
+the expression “change[1:29]” and the last 21 vales are obtained via the
+expression “change[30:50]”.)
+mean(magnets$change[1:29])
+mean(magnets$change[30:50])
+
+4. Compute the sample standard deviation of the variable “change” for the
+patients that received and active magnet and the sample standard deviation for those that received an inactive placebo.
+
+sd(magnets$change[1:29])
+sd(magnets$change[30:50])
+
+5. Produce a boxplot of the variable “change” for the patients that received
+and active magnet and for patients that received an inactive placebo.
+What is the number of outliers in each subsequence?
+
+boxplot(magnets$change[1:29]), 0
+boxplot(magnets$change[30:50]), 3 outliers
+
+
+Read Chapter 10 of IST and do exercises 10.1 and 10.2
+10.1.1
+
+mu <- 3
+sd <- sqrt(2)
+X.bar <- rep(0,10^5)
+X.med <- rep(0, 10^5)
+for (i in 1:10^5){
+  X <- rnorm(100, mu, sd)
+  X.bar[i] <- mean(X)
+  X.med[i] <- median(X)
+}
+
+# find the expectation
+> mean(X.bar)
+[1] 3.000421
+> mean(X.med)
+[1] 3.000977
+> # find the variance
+  > var(X.bar)
+[1] 0.02008803
+> var(X.med)
+[1] 0.0308979
+
+
+
+####################################
+Notes:
+pop.1 <- read.csv("pop1.csv")
+X.samp <- sample(pop.1$height, 100) # a sequence that contains 100 height
+X.bar <- mean(X.samp)
+
+
+> X.samp <- sample(pop.1$height,100)
+> X.bar <- mean(X.samp)
+> X.bar
+[1] 171.87
+and do it once more:
+> X.samp <- sample(pop.1$height,100)
+> X.bar <- mean(X.samp)
+> X.bar
+[1] 171.02
+
+Note: if doing the above, we get different value for the sample average. 
+
+
+# rep creates a sequence that contains repeats of its first arg a number of times that is specific by its second arg
+# in the following example, the num value 0 is repeat 10^5 times to produce a sequence of zeros of the length we seek
+X.bar <- rep(0, 10^5) 
+for(i in 1:10^5){
+  X.samp <- sample(pop.1$height,100)
+  X.bar[i] <- mean(X.samp)
+}
+
+hist(X.bar)
+
+> mean(pop.1$height)
+[1] 170.035
+> sd(pop.1$height)
+[1] 11.23205
+> mean(X.bar)
+[1] 170.037
+> sd(X.bar)
+[1] 1.122116
+
+
+> mean(abs(X.bar - mean(pop.1$height)) <= 1)
+[1] 0.62589
+
+
+
+chapter 9
+> mid.range <- rep(0,10^5)
+> for(i in 1:10^5)
++ {
++ X <- runif(100,3,7)
++ mid.range[i] <- (max(X)+min(X))/2
++ }
+> quantile(mid.range,c(0.025,0.975))
+2.5% 97.5%
+4.941680 5.059004
+
+#what it does: simulation that produces an approximation of the central region that contains 95 % of the sampling distrivution of the mid-range static for the uniform distribution
+# for the compution, min and max is requred. 
+# the first arg is a sequence of values and the second arg is a number p between 0 and 1. If the second arg is a sequence of values between 0 and 1, then the percentile for each value in the second argument will be computed. E.x. quantile(mid.range, c(0.025, 0.975))
+
+Binomial
+The binomial distribution is used in settings that involves counting the number of occurrences of a particular outcome. The first arg, n, is the number of observation and the second arg, p, is the probability of obtaining the particular outcome in each observation. 
+The functions, dbinom, pbinom, and qbinom may be used to compute the probability, the cumulative probability, and the percentile respectively. The function rbinom can be used to simulate a random sample from the distribution. 
+
+e.x.
+rbinom(40, 10, 0.5) - creates 40 values from a sample of 10 with a probability of 0.5
+
+
+Poisson
+use when involve counting
+function: dpois, ppois, qpois, and rpois
+
+Uniform: 
+use in order to model measurements that may have values in a given interval, with all values in this interval equally likely to occur
+functions: dunif, punif, qunif, runif
+
+Ponential:
+used to model times between events
+functions: dexp, pexp, qexp, rexp
+
+Normal:
+generic model fr the distribution of a measurement
+
+
+
+
+CH 10
+var(X.norm(20,mu, std))
+
+
+
+
+
+
+
+
