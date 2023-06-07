@@ -47,6 +47,13 @@ ggplot(data = mpg) +
 # Some advantages of using aesthestic instead of facet such as have a overview of the data relatively and from a bigger picture. 
 # and a disadvantage is not seeing the details. 
 
+# Section 3.6.1, exercises 5 and 6
+
+# Section 3.8.1, exercises 1 and 2
+
+
+
+
 
 
 
