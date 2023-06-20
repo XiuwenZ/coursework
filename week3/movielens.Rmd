@@ -24,6 +24,7 @@ Read data from the `ratings.csv` file
 ```{r load-data}
 ratings <- read_csv('ratings.csv',
                     col_names = c('user_id','movie_id','rating','timestamp'))
+ratings
 ```
 
 Loaded `r format(object.size(ratings), units="Mb")` of ratings data, containing `r format(nrow(ratings), big.mark = ",")` ratings. Here's a preview:
@@ -35,6 +36,14 @@ head(ratings) %>% kable()
 
 ```{r dist-ratings}
 # plot the distribution of rating values https://speakerdeck.com/jhofman/modeling-social-data-lecture-2-introduction-to-counting?slide=26
+ratings %>%
+  group_by(rating) %>%
+  ggplot(aes(x = rating)) + 
+  geom_histogram(bin = 10)+
+  scale_y_continuous(labels = label_comma()) 
+
+
+
 ```
 
 ## Per-movie stats
@@ -42,24 +51,57 @@ head(ratings) %>% kable()
 ```{r aggregate-by-movie}
 # aggregate ratings by movie, computing mean rating and number of ratings
 # hint: use the n() function for easy counting within a group
+
+ratings %>%
+  group_by(movie_id) %>%
+  summarize(mean_of_ratings = mean(rating), count = n())
 ```
 
 ```{r dist-movie-popularity}
 # plot distribution of movie popularity (= number of ratings the movie received)
 # hint: try scale_x_log10() for a logarithmic x axis
+ratings %>%
+  group_by(movie_id) %>%
+  summarize(movie_popularity = n()) %>%
+  ggplot(aes(x= movie_popularity)) +
+  geom_density() + 
+  scale_x_log10()
+
+  
 ```
 
 ```{r dist-mean-ratings-by-movie}
 # plot distribution of mean ratings by movie https://speakerdeck.com/jhofman/modeling-social-data-lecture-2-introduction-to-counting?slide=28
 # hint: try geom_histogram and geom_density
+ratings %>%
+  group_by(movie_id) %>%
+  summarize(mean_of_ratings = mean(rating), count = n()) %>%
+  ggplot(aes(x= mean_of_ratings)) +
+  geom_histogram()
+  
+
 ```
 
 ```{r cdf-movie-pop}
-# rank movies by popularity (number of ratings) and compute the cdf, or fraction of all views covered by the top-k movies https://speakerdeck.com/jhofman/modeling-social-data-lecture-2-introduction-to-counting?slide=30
+# rank movies by popularity (number of ratings) and compute the cdf, or fraction of movies covered by the top-k movies https://speakerdeck.com/jhofman/modeling-social-data-lecture-2-introduction-to-counting?slide=30
 # hint: use dplyr's rank and arrange functions, and the base R sum and cumsum functions
 # store the result in a new data frame so you can use it in creating figure 2 from the paper below
 
 # plot the CDF of movie popularity
+
+movie_popularity_with_rank <- ratings %>%
+  group_by(movie_id) %>%
+  summarize(movie_popularity = n()) %>%
+  mutate(rank = rank(desc(movie_popularity))) %>%
+  arrange(desc(movie_popularity)) %>%
+  mutate(cdf = cumsum(movie_popularity) / sum(movie_popularity)) %>%
+  ggplot(aes(x = rank, y = cdf)) +
+  geom_line() +
+  xlab("Rank") +
+  ylab("CDF of Movie Popularity")
+  
+
+
 ```
 
 
@@ -67,11 +109,25 @@ head(ratings) %>% kable()
 
 ```{r aggregate-by-user}
 # aggregate ratings by user, computing mean and number of ratings
+ratings %>%
+  group_by(user_id) %>%
+  summarize(mean(rating), ratings_count = n())
+  
+
 ```
 
 ```{r dist-user-activity}
 # plot distribution of user activity (= number of ratings the user made)
 # hint: try a log scale here
+
+ratings %>%
+  group_by(user_id) %>%
+  summarize(num_ratings = n()) %>%
+  ggplot(aes(x = num_ratings)) +
+  geom_histogram(color = "black") +
+  scale_x_log10() +
+  labs(x = "Number of Ratings", y = "Frequency") 
+
 ```
 
 # Anatomy of the long tail
@@ -91,4 +147,33 @@ head(ratings) %>% kable()
 # paper, produce one curve for the 100% user satisfaction level and
 # another for 90%---do not, however, bother implementing the null
 # model (shown in the dashed lines).
+
+# filter the users who rated at least 10 movies
+
+# create a datafeame of ratings_by_movie and a ratings_by_user
+# combine the user id and rank 
+ratings_by_movies <- ratings %>% 
+  group_by(movie_id) %>%
+  summarize(movie_popularity = n()) %>% 
+  mutate(rank = rank(desc(movie_popularity)))
+
+
+ratings_by_users  <- ratings %>% 
+  group_by(user_id) %>% 
+  summarize(movie_popularity = n())
+
+
+# join ratings_by_user and ratings_by_movies by user_id 
+
+
+
+# calculative the cumulative inventory (and the sum of all inventory) to get the percentage of how much the inventory meets the users 90 percent satisfication and 10 percent satisfication
+  
+  
+# plot the line of 90 percent satisfication and 100 percent satisfication
+# #####################################
+
+
+
+
 ```

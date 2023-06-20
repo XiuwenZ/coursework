@@ -13,3 +13,5 @@
 .DS_Store
 .RDataTmp
 *.RDataTmp
+*googlebooks*
+week3/ngrams/googlebooks-eng-all-1gram-20120701-1
