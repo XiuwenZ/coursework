@@ -14,4 +14,7 @@
 .RDataTmp
 *.RDataTmp
 *googlebooks*
+<<<<<<< HEAD
 week3/ngrams/googlebooks-eng-all-1gram-20120701-1
+=======
+>>>>>>> 250aaca59bb59c4d708dc7cc733bdb66dc215c35
