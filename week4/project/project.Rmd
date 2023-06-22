@@ -1,0 +1,75 @@
+```{r}
+library(scales)
+library(tidyverse)
+library(modelr)
+library(ggplot2)
+
+city <- read_csv(gzfile("data/city_day_agg_cleaned.csv.gz"))
+
+country <- read_csv(gzfile("data/country_day_agg_cleaned.csv.gz"))
+
+```
+
+## plot the world map of NO2,O3, and PM2.5
+
+```{r}
+year_2020<- country %>% 
+  filter(date > "2019-12-31") 
+  
+three_year<- country %>% 
+  filter(date < "2020-01-01") 
+
+
+# separate by parameter
+year_2020_pm25 <- year_2020 %>% 
+  filter(parameter =="pm25") %>% 
+  group_by(countryCode) %>%
+  summarize(avg = mean(mean,na.rm = TRUE))
+
+three_yr_pm25 <- three_year %>% 
+  filter(parameter =="pm25") %>% 
+  group_by(countryCode) %>%
+  summarize(avg = mean(mean,na.rm = TRUE))
+
+
+year_2020_pm25_by_city <- city %>%
+  filter(date > as.Date("2019-12-31")) %>%
+  filter(parameter == "pm25") %>%
+  mutate(date_with = date) %>% 
+  group_by(city_id, date) %>%
+  summarize(avg = mean(mean, na.rm = TRUE)) 
+
+three_year_pm25_by_city <- city %>% 
+  filter(date < "2020-01-01") %>% 
+  filter(parameter =="pm25") %>% 
+  group_by(city_id) %>%
+  summarize(avg = mean(mean,na.rm = TRUE))
+  mutate(year = as.Date(as.character(yrs), format = "%Y"))
+
+# use the is_2020_factor to plot two 
+pm25 <- inner_join(year_2020_pm25_by_city, three_year_pm25_by_city, by = 'city_id')
+  
+ggplot(year_2020_pm25_by_city, aes(x = avg), fill = "pink") +
+    geom_density(fill = is_2020) +
+    scale_x_log10(label = comma) +
+    xlab('PM2.5') +
+    ylab('Data Density')
+
+
+
+
+
+     
+
+world <- map_data("world")
+ggplot() +
+  geom_map(
+    data = world, map = world,
+    aes(long, lat, map_id = region),
+    color = "black", fill = "grey", size = 0.1
+  ) +
+  
+
+```
+
+
